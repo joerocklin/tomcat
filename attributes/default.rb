@@ -47,6 +47,8 @@ default['tomcat']['loglevel'] = 'INFO'
 default['tomcat']['tomcat_auth'] = 'true'
 default['tomcat']['instances'] = {}
 default['tomcat']['run_base_instance'] = true
+default['tomcat']['packages'] = ["tomcat#{node['tomcat']['base_version']}"]
+default['tomcat']['deploy_manager_packages'] = ["tomcat#{node['tomcat']['base_version']}-admin"]
 
 case node['platform']
 
@@ -64,6 +66,7 @@ when 'centos', 'redhat', 'fedora', 'amazon', 'scientific', 'oracle'
   default['tomcat']['keytool'] = 'keytool'
   default['tomcat']['lib_dir'] = "#{node["tomcat"]["home"]}/lib"
   default['tomcat']['endorsed_dir'] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+  default['tomcat']['deploy_manager_packages'] = ["tomcat#{node['tomcat']['base_version']}-admin-webapps"]
 when 'debian', 'ubuntu'
   default['tomcat']['user'] = "tomcat#{node["tomcat"]["base_version"]}"
   default['tomcat']['group'] = "tomcat#{node["tomcat"]["base_version"]}"
@@ -92,6 +95,8 @@ when 'smartos'
   default['tomcat']['keytool'] = '/opt/local/bin/keytool'
   default['tomcat']['lib_dir'] = "#{node["tomcat"]["home"]}/lib"
   default['tomcat']['endorsed_dir'] = "#{node["tomcat"]["home"]}/lib/endorsed"
+  default['tomcat']['packages'] = ["apache-tomcat#{node['tomcat']['base_version']}"]
+  default['tomcat']['deploy_manager_packages'] = []
 else
   default['tomcat']['user'] = "tomcat#{node["tomcat"]["base_version"]}"
   default['tomcat']['group'] = "tomcat#{node["tomcat"]["base_version"]}"

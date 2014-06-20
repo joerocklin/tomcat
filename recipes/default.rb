@@ -22,29 +22,21 @@
 
 include_recipe 'java'
 
-tomcat_pkgs = value_for_platform(
-  ['smartos'] => {
-    'default' => ['apache-tomcat'],
-  },
-  'default' => ["tomcat#{node['tomcat']['base_version']}"],
-  )
-if node['tomcat']['deploy_manager_apps']
-  tomcat_pkgs << value_for_platform(
-    %w{ debian  ubuntu } => {
-      'default' => "tomcat#{node['tomcat']['base_version']}-admin",
-    },    
-    %w{ centos redhat fedora amazon scientific oracle } => {
-      'default' => "tomcat#{node['tomcat']['base_version']}-admin-webapps",
-    },
-    )
+if node['platform'] == 'centos'
+  node.default['tomcat']['packages'] = ['tomcat6'] if node['tomcat']['base_version'] == 6
+  node.default['tomcat']['packages'] = ['tomcat'] if node['tomcat']['base_version'] == 7
 end
 
-tomcat_pkgs.compact!
-
-tomcat_pkgs.each do |pkg|
+node['tomcat']['packages'].each do |pkg|
   package pkg do
     action :install
-    version node['tomcat']['base_version'].to_s if platform_family?('smartos')
+  end
+end
+
+node['tomcat']['deploy_manager_packages'].each do |pkg|
+  package pkg do
+    action :install
+    only_if { node['tomcat']['deploy_manager_apps'] }
   end
 end
 
