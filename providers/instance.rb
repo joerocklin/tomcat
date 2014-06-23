@@ -1,5 +1,6 @@
 action :configure do
   base_instance = "tomcat#{node['tomcat']['base_version']}"
+  base_instance = 'tomcat' if node['platform'] == 'centos' and node['tomcat']['base_version'] == 7
 
   # Set defaults for resource attributes from node attributes. We can't do
   # this in the resource declaration because node isn't populated yet when
@@ -107,7 +108,7 @@ action :configure do
   case node['platform']
   when 'centos', 'redhat', 'fedora', 'amazon', 'oracle'
     template "/etc/sysconfig/#{instance}" do
-      source 'sysconfig_tomcat6.erb'
+      source "sysconfig_tomcat#{node['tomcat']['base_version']}.erb"
       variables ({
         :user => new_resource.user,
         :home => new_resource.home,
@@ -134,7 +135,7 @@ action :configure do
     end
   else
     template "/etc/default/#{instance}" do
-      source 'default_tomcat6.erb'
+      source "default_tomcat#{node['tomcat']['base_version']}.erb"
       variables ({
         :user => new_resource.user,
         :group => new_resource.group,

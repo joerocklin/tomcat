@@ -23,8 +23,21 @@
 include_recipe 'java'
 
 if node['platform'] == 'centos'
-  node.default['tomcat']['packages'] = ['tomcat6'] if node['tomcat']['base_version'] == 6
-  node.default['tomcat']['packages'] = ['tomcat'] if node['tomcat']['base_version'] == 7
+  if node['tomcat']['base_version'] == 7
+    include_recipe 'yum-epel'
+    node.default['tomcat']['packages'] = ['tomcat']
+    node.default['tomcat']['deploy_manager_packages'] = ['tomcat-admin-webapps']
+    node.default['tomcat']['home'] = "/usr/share/tomcat"
+    node.default['tomcat']['base'] = "/usr/share/tomcat"
+    node.default['tomcat']['config_dir'] = "/etc/tomcat"
+    node.default['tomcat']['log_dir'] = "/var/log/tomcat"
+    node.default['tomcat']['tmp_dir'] = "/var/cache/tomcat/temp"
+    node.default['tomcat']['work_dir'] = "/var/cache/tomcat/work"
+    node.default['tomcat']['context_dir'] = "#{node["tomcat"]["config_dir"]}/Catalina/localhost"
+    node.default['tomcat']['webapp_dir'] = "/var/lib/tomcat/webapps"
+    node.default['tomcat']['lib_dir'] = "#{node["tomcat"]["home"]}/lib"
+    node.default['tomcat']['endorsed_dir'] = "#{node["tomcat"]["lib_dir"]}/endorsed"
+  end
 end
 
 node['tomcat']['packages'].each do |pkg|
